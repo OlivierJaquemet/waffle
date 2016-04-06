@@ -2,7 +2,7 @@ Spring Security Single-SignOn Filter
 ====================================
 
 The Waffle Spring-Security Filter implements the Negotiate and Basic protocols with Kerberos and NTLM single sign-on support for web applications that utilize Spring-Security. This allows users to browse to a Windows intranet site without having to re-enter credentials for browsers that support Kerberos or NTLM and to fall back to Basic authentication for those that do not. For more information about Spring-Security see [http://static.springsource.org/spring-security/site/](http://static.springsource.org/spring-security/site/). 
-
+NOTE: Also available with delegation to support authentication for the service provider [here] (https://github.com/dblock/waffle/blob/master/Docs/spring/DelegatingSpringSecuritySingleSignOnFilter.md)
 Configuring Spring Security
 ---------------------------
 
@@ -28,7 +28,7 @@ We'll assume that Spring-Security is configured via `web.xml` with a filter chai
 </listener>
 ```
 
-Copy Waffle JARs, including `waffle-jna.jar`, `guava-13.0.1.jar`, `jna-3.5.0.jar`, `platform-3.5.0.jar`, `slf4j*.jar` and `waffle-spring-security-3.jar` in the application's `lib` directory along with Spring and Spring-Security JARs. Or, if you use Maven, add the following to your `pom.xml`:
+Copy Waffle JARs, including `waffle-jna.jar`, `guava-18.0.jar`, `jna-4.2.0.jar`, `jna-platform-4.2.0.jar`, `slf4j*.jar` and `waffle-spring-security-3.jar` in the application's `lib` directory along with Spring and Spring-Security JARs. Or, if you use Maven, add the following to your `pom.xml`:
 
 ``` xml
 <dependency>
@@ -112,6 +112,7 @@ The `waffleNegotiateSecurityFilter` bean can be configured with the following op
 * principalFormat: Specifies the name format for the principal.
 * roleFormat: Specifies the name format for the role.
 * allowGuestLogin: Allow guest login. When true and the system's Guest account is enabled, any invalid login succeeds as Guest. Note that while the default value of allowGuestLogin is true, it is recommended that you disable the system's Guest account to disallow Guest login. This option is provided for systems where you don't have administrative privileges. 
+* impersonate: Allow impersonation. When true the remote user will be impersonated. Note that there is no mapping between the Windows native threads, under which the impersonation takes place, and the Java threads. Thus you'll need to use Windows native APIs to perform impersonated actions. Any action done in Java will still be performed with the user account running the servlet container.
 * defaultGrantedAuthority: Specifies the `GrantedAuthority` to be added to every successfully authenticated user. By default, the `defaultGrantedAuthority` will add a `GrantedAuthority` for `ROLE_USER`. If you do not want this behavior, you can set the `defaultGrantedAuthority` to `null` (if you do not want a `GrantedAuthority` to be added by default), or some other `GrantedAuthority`. 
 * grantedAuthorityFactory: Used to create `GrantedAuthority` objects for each of the groups to which the authenticated user belongs. The default `grantedAuthorityFactory` will construct `GrantedAuthority` objects whose string is the uppercase group name prefixed with `ROLE_`. 
 
@@ -119,6 +120,7 @@ The `waffleNegotiateSecurityFilter` bean can be configured with the following op
 <bean id="waffleNegotiateSecurityFilter" class="waffle.spring.NegotiateSecurityFilter">
     <property name="Provider" ref="waffleSecurityFilterProviderCollection" />
     <property name="AllowGuestLogin" value="false" />
+    <property name="Impersonate" value="true" />
     <property name="PrincipalFormat" value="fqn" />
     <property name="RoleFormat" value="both" />
 </bean>

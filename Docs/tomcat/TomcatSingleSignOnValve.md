@@ -8,7 +8,7 @@ Configuring Tomcat
 
 The following steps are required to configure Tomcat with Waffle authenticator. 
 
-Package Waffle JARs, including `waffle-jna.jar`, `guava-13.0.1.jar`, `jna-3.5.0.jar`, `platform-3.5.0.jar`, `slf4j*.jar` and `waffle-tomcat-6.jar` in the application's lib directory or copy them to Tomcat's lib.
+Package Waffle JARs, including `waffle-jna.jar`, `guava-18.0.jar`, `jna-4.2.0.jar`, `jna-platform-4.2.0.jar`, `slf4j*.jar` and `waffle-tomcat-6.jar` in the application's lib directory or copy them to Tomcat's lib.
 
 Add a valve and a realm to the application context. For an application, modify `META-INF\context.xml`. 
 
@@ -75,6 +75,7 @@ The following options are supported by the Valve.
 * principalFormat: Specifies the name format for the principal.
 * roleFormat: Specifies the name format for the role.
 * allowGuestLogin Allow guest login. When true and the system's Guest account is enabled, any invalid login succeeds as Guest. 
+* protocols: authentication protocol(s), comma separated, default is "Negotiate,NTLM"
 
 Note: While the default value of `allowGuestLogin` is true, it is recommended that you disable the system's "Guest" account to disallow Guest login. This option is provided for systems where you don't have administrative privileges. 
 

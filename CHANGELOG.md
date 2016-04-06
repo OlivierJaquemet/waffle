@@ -1,11 +1,155 @@
-1.6 (Next Release)
-==================
+1.8.1 (2/10/16)
+================
+
+* Official notification dropping long-term support on 1.7.x branch
+* Rework .net build to be mostly automatic using nuget
+* Change .net target to more modern .net 4.0 framework
+* [#309](https://github.com/dblock/waffle/pull/309): Added impersonation support on spring-security filters [@sergey-podolsky](https://github.com/sergey-podolsky).
+* [#296](https://github.com/dblock/waffle/pull/296): Added Tomcat 9 support.
+* [#268](https://github.com/dblock/waffle/pull/301): Cannot log in automatically on machine where Tomcat service is running
+* [#274](https://github.com/dblock/waffle/pull/274): Update WindowsSecurityContextImpl.java to handle SEC_E_BUFFER_TOO_SMALL
+* [#128](https://github.com/dblock/waffle/pull/128): Update WindowsSecurityContext.cs to handle SEC_E_BUFFER_TOO_SMALL
+* [#310](https://github.com/dblock/waffle/pull/310): Add equals and hashCode to WindowsPrincipal
+
+1.8.0 (09/10/15)
+================
+*** Java Requirement now 1.7 ***
+
+* Introduction of diamond operator and try with resources firmly requiring java 7.
+* [#187](https://github.com/dblock/waffle/pull/187): Removed Spring 2 and Tomcat 5 support.
+* [#226](https://github.com/dblock/waffle/pull/226): Moving base to java 1.7
+* [#239](https://github.com/dblock/waffle/pull/239): Fix handle leak in LSASS.exe process.
+
+1.7.5 (11/7/15)
+===============
+* Backport [#239](https://github.com/dblock/waffle/pull/239): Fix handle leak in LSASS.exe process.
+
+1.7.4 (05/12/15)
+================
+* [#188](https://github.com/dblock/waffle/issues/188): Added support for service provider to authorize the principal.
+* [#192](https://github.com/dblock/waffle/pull/192): Fix: Tomcat 8 MixedAuthenticator uses LoginConfig out of context.
+* [#206](https://github.com/dblock/waffle/pull/206): Fix issue [#203](https://github.com/dblock/waffle/issues/203)
+  ** Tomcat negotiate filters reporting Win32Error 500 status error instead of 401.
+  ** Related to issue [#107](https://github.com/dblock/waffle/issues/107)
+* [#207](https://github.com/dblock/waffle/pull/207): Further refinement of test dependencies and now requires java 7 to compile library.
+  ** At this point, still supports java 6 runtimes.
+
+* Github gh-pages now built via mvn site plugin.
+* We use sfl4j, so use jcl-over-slf4j instead of allowing spring to bring in commons-logging.
+
+1.7.3 (12/21/2014)
+===================
+* Corrected javadoc issues in shiro package to ensure javadocs build.
+* Make some package methods private in shiro package.
+
+1.7.2 (Not Released)
+====================
+* Ensure waffle dependencies referenced in poms are against vulnerability free releases.
+* Rework java build to conform with maven standard practices.
+* Enhance distribution to build zip thus allowing maven central deployment.
+* Discovered issues with classpath / javadoc, release aborted upon push to maven central.
+
+Developer note
+--------------
+* [#164](https://github.com/dblock/waffle/issues/164): Added unit test in waffle-tests using catch-exception test library to verify the condition caught is actually expected.
+
+1.7.1 (11/30/2014 - waffle-jna only)
+====================================
+* [#164](https://github.com/dblock/waffle/issues/164): Added try/catch to authorization header base64 decode in cases of invalid or unsupported authentication header.
+  ** Throws runtimeException "Invalid authorization header."
+* [#168](https://github.com/dblock/waffle/pull/168): Exception stack trace on invalid credentials.
+  ** Change in waffle 1.7 per sonar to trap only thrown errors resulted in a regression where user enters invalid
+     creditionals and expected behaviour is to ask again but instead a stack trace was thrown.  Special thanks to
+     @gstanchev for finding and helping resolve this issue.
+* Drop legacy base64 usage previously deprecated.  We use guava for this now.
+* Small number of array object creations cleanup.
+
+1.7 (9/25/2014)
+===============
+
+Notable Feature Changes
+-----------------------
+* Full Mavenized Build
+* All demos now mavenized
+* Support for Tomcat 8
+* Support for Spring 4 & Spring-security 4
+* Enhanced logging
+* Tomcat Protocol parameter for valves to allow default Negotiate / NTLM or selective setup
+* Restructured project for full maven support and clearer intent
+* Upgraded .NET build to Visual Studio 10, .NET Framework 4
+* Enforce Java code formatting (space based) through maven plugin
+* Enforce License information in Java code through maven plugin
+* Deprecated Base64 internal usage in favor of using Guava BaseEncoding Base64.
+* Mocking Testing of third party implementations for cleaner intent.
+
+Changes
+--------
+* [#140](https://github.com/dblock/waffle/pull/140): Mocking Unit Tests - [@hazendaz](https://github.com/hazendaz).
+  * Mock implementations used in unit tests for various features such as tomcat/shiro in order to make it clear to intention of waffle tests.
+* [#136](https://github.com/dblock/waffle/pull/136): Enable user logging when using filter [@tbenbrahim](https://github.com/tbenbrahim).
+  * Added toString to WindowsPrincipal to enable logging of authenticated user when using the servlet filter, using the waffle.servlet.NegotiateSecurityFilter.PRINCIPAL session attribute.
+* [#120](https://github.com/dblock/waffle/pull/120): Application Security License - [@hazendaz](https://github.com/hazendaz).
+  * Using License Maven Plugin to ensure license is up to date on java files
+  * All donated code to library now has proper license
+  * License controlled through license.txt under waffle-parent
+* [#119](https://github.com/dblock/waffle/pull/119): Format Enahancement - [@hazendaz](https://github.com/hazendaz).
+  * Using Java Format Maven Plugin to ensure formatting of code consistent
+  * Now using spaces rather than tabs.
+* [#108](https://github.com/dblock/waffle/pull/108): Spring 4 - [@hazendaz](https://github.com/hazendaz).
+  * Spring 4 / Spring Security 4 support
+  * Early release [no changes over spring 3]
+* [#101](https://github.com/dblock/waffle/pull/101): Enhance Logging - [@hazendaz](https://github.com/hazendaz).
+  * Use full feature {} of logging and stop concatenating strings.
+* [#97](https://github.com/dblock/waffle/pull/97): Added protocols parameter on Tomcat valves - [@hasalex](https://github.com/hasalex).
+  * Attribute protocols on the valve in order to limit the authentication to one or some protocols
+* [#93](https://github.com/dblock/waffle/pull/93): Updated Documentation - [@hazendaz](https://github.com/hazendaz).
+  * First cut at updating documentation to reflect maven.
+* [#92](https://github.com/dblock/waffle/pull/92): Pom Corrections - [@hazendaz](https://github.com/hazendaz).
+  * Oops! #91 attempted to remove .settings but actually added them back, removing again.
+* [#91](https://github.com/dblock/waffle/pull/91): Drop eclipse settings - [@ryantxu](https://github.com/ryantxu).
+  * More maven cleanup work, removed .settings, .classpath, and .project files from build as maven creates these.
+  * Additional benefit here is that this is easily built using many various IDE's tanks to maven.
+* [#90](https://github.com/dblock/waffle/pull/90): Pom Corrections - [@hazendaz](https://github.com/hazendaz).
+  * Corrected missed change #87 on rename of build in multi module pom
+  * Fixed issue with incorrect objenesis version being picked up by maven resolution
+  * Reworked parent POM for use with users without their own nexus repo
+  * Fixed to work properly with GIT so jars show all necessary manifest information
+* [#88](https://github.com/dblock/waffle/pull/88): Full Mavenization - Part 2 - [@hazendaz](https://github.com/hazendaz).
+  * Using standard maven layout now.
+  * Fixed one test case that was case sensitive
+  * Added default to case statements with break.
+* [#87](https://github.com/dblock/waffle/pull/87): Renamed 'demo' & 'build' - [@hazendaz](https://github.com/hazendaz).
+  * Renamed these modules to reflect their true nature
+* [#86](https://github.com/dblock/waffle/pull/86): Full Mavenization - Part 1 - [@hazendaz](https://github.com/hazendaz).
+  * Building on maven beginnings of project for making this a maven only build
+  * Removed ant/ivy configuration
+  * Known issue in built files due to not using standard maven layout, expect to fix later
+  * Cleanup git ignores for removed ivy items
+  * Corrected issue with mockito pulling in old hamcrest
+  * Reworked demo to be more maven like in layout
+  * Added more settings for tomcat8
+  * Jetty skips javadocs due to no public classes
+* [#84](https://github.com/dblock/waffle/pull/84): Added a better embedded Jetty example - [@juliangamble](https://github.com/juliangamble).
+  * See 'Adding a better embedded Jetty example PR #81' for more details
+* [#83](https://github.com/dblock/waffle/pull/83): Added fluido skin - [@hazendaz](https://github.com/hazendaz).
+  * Provides maven site generation using twitter bootstrap for nice look and feel
+* [#82](https://github.com/dblock/waffle/pull/82): Tomcat 8 Support (BETA) - [@hazendaz](https://github.com/hazendaz).
+  * BETA Tomcat 8 support
+* [#78](https://github.com/dblock/waffle/pull/78): POM Updates - [@hazendaz](https://github.com/hazendaz).
+  * Now supporting tomcat 6.0.39 / 7.0.52
+  * Updated versions throughout
+* [#76](https://github.com/dblock/waffle/pull/76): Add [SPNEGO NegTokenArg](http://msdn.microsoft.com/en-us/library/ms995330.aspx) support - [@AriSuutariST](https://github.com/AriSuutariST).
+* Fixed `WindowsComputerImpl.Groups` returning an empty local groups set - [@dblock](https://github.com/dblock).
+* [#114](https://github.com/dblock/waffle/issues/114): Fixed `Waffle.Windows.AuthProvider.WindowsSecurityContext` and `WindowsAuthProviderImpl` to loop and allocate memory on `SEC_E_INSUFFICIENT_MEMORY` beyond `Secur32.MAX_TOKEN_SIZE` in `InitializeSecurityContext` and `AcceptSecurityContext` - [@kentcb](https://github.com/kentcb).
+
+1.6 (12/24/2013)
+================
 
 Features
 --------
 
 * [#64](https://github.com/dblock/waffle/pull/64): Upgraded to JNA 4.0 - [@ryantxu](https://github.com/ryantxu).
-* [#40](https://github.com/dblock/waffle/pull/40): Added [SPNEGO negotiation](http://msdn.microsoft.com/en-us/library/ms995330.aspx) support - [@AriZuu](https://github.com/AriZuu).
+* [#40](https://github.com/dblock/waffle/pull/40): Added [SPNEGO negotiation](http://msdn.microsoft.com/en-us/library/ms995330.aspx) support - [@AriSuutariST](https://github.com/AriSuutariST).
 * [#48](https://github.com/dblock/waffle/pull/48): Added username/password authentication support for [Apache Shiro](http://shiro.apache.org/) - [@davidmc24](https://github.com/davidmc24).
 * [#51](https://github.com/dblock/waffle/pull/51): Added negotiate authentication support for [Apache Shiro](http://shiro.apache.org/) - [@bhamail](https://github.com/bhamail).
 

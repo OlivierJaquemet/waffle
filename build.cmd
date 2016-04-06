@@ -5,26 +5,25 @@ if "%~1"=="" (
  goto :EOF
 )
 
+call bootstrap.cmd
+
 pushd "%~dp0"
 setlocal ENABLEEXTENSIONS ENABLEDELAYEDEXPANSION
 
 set ProgramFilesDir=%ProgramFiles%
 if NOT "%ProgramFiles(x86)%"=="" set ProgramFilesDir=%ProgramFiles(x86)%
 
-set VisualStudioCmd=%ProgramFilesDir%\Microsoft Visual Studio 9.0\VC\vcvarsall.bat
+set VisualStudioCmd=%ProgramFilesDir%\Microsoft Visual Studio 12.0\VC\vcvarsall.bat
 if EXIST "%VisualStudioCmd%" call "%VisualStudioCmd%"
 
-for /D %%n in ( "%ProgramFilesDir%\NUnit*" ) do (
- set NUnitDir=%%~n
-)
+set NUnitDir=Tools\NUnit.Runners
 
-if EXIST "%NUnitDir%\bin" set NUnitBinDir=%NUnitDir%\bin
-if EXIST "%NUnitDir%\bin\net-2.0" set NUnitBinDir=%NUnitDir%\bin\net-2.0
+if EXIST "%NUnitDir%\tools" set NUnitBinDir=%NUnitDir%\tools
 
 if NOT EXIST "%NUnitBinDir%" echo Missing NUnit, expected in %NUnitDir%
 if NOT EXIST "%NUnitBinDir%" exit /b -1
 
-set FrameworkVersion=v3.5
+set FrameworkVersion=v4.0.30319
 set FrameworkDir=%SystemRoot%\Microsoft.NET\Framework
 
 PATH=%FrameworkDir%\%FrameworkVersion%;%NUnitDir%;%JAVA_HOME%\bin;%PATH%

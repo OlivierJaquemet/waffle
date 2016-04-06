@@ -6,7 +6,7 @@ This is a guide for WAFFLE developers hoping to publish a release to Maven Centr
 Building with Maven
 -------------------
 
-In order to build with [Maven][], you'll need Java 6+ and [Maven][] 3.0.4+.  Download and install them, and then run `mvn --version` to check that it's working.  If you don't already have it, also get Git and a clone of the WAFFLE repository.  Once you have this, run `mvn package` in the `Source/JNA` directory.  This command compiles, unit tests, and JARs all of the WAFFLE components that are currently Maven-enabled.
+In order to build with [Maven][], you'll need Java 6+ and [Maven][] 3.2.1+.  Download and install them, and then run `mvn --version` to check that it's working.  If you don't already have it, also get Git and a clone of the WAFFLE repository.  Once you have this, run `mvn package` in the `Source/JNA/waffle-parent` directory.  This command compiles, unit tests, and JARs all of the WAFFLE components that are currently Maven-enabled.
 
 If you don't want to run the unit tests (which can be useful if you're trying to compile on a non-Windows platform), use `mvn package -DskipTests=true` instead.  This isn't recommended for release builds.
 
@@ -17,7 +17,7 @@ One-Time Release Setup
 
 In order to perform Maven releases, there's some extra steps needed beyond what's needed to build WAFFLE.
 
-First, make sure you have a [GPG][] client installed and on your command-line path.  If you don't already have one, create a [GPG][] key pair and distribute your public key to hkp://pool.sks-keyservers.net/.  See [How To Generate PGP Signatures With Maven](https://docs.sonatype.org/display/Repository/How+To+Generate+PGP+Signatures+With+Maven) for more information.
+First, make sure you have a [GPG][] client installed and on your command-line path.  If you don't already have one, create a [GPG][] key pair and distribute your public key to hkp://pool.sks-keyservers.net/.  See [How To Generate PGP Signatures With Maven](http://central.sonatype.org/pages/working-with-pgp-signatures.html) for more information.
 
 Next, you need to get access to the Sonatype OSS repositories.  This is covered as steps 2-3 in the [Sonatype OSS Maven Repository Usage Guide][OSSGuide].  The correct groupId to use is "com.github.dblock".
 
@@ -40,6 +40,11 @@ After you have your account all set up, configure your Maven settings.xml (gener
       ...
     </settings>
 
+In order to perform mvn release, there's some extra steps needed byond what's needed to build WAFFLE.
+
+First, follow this link and get yourself setup with ssh on github first [github-ssh-keys].  If ssh-add does not work and fails 
+with error 'Could not open a connection to your authentication agent' but the agent looks right, enter 'eval $(ssh-agent)', then try the ssh-add again.
+
 Deploying Snapshots
 -------------------
 
@@ -54,25 +59,59 @@ Releasing to Maven Central via the Sonatype OSS Repository is a two-phase proces
 
 To build the artifacts and upload them to a new staging repository, run the following commands.  These make use of the [Maven Release Plugin][maven-release-plugin], which is rather complex.  It will prompt you for various information related to the release, modify the POM files to update the version, and perform Git operations on your behalf.  It is recommended to read its documentation before proceeding, and consider doing a dry run (as documented in the [usage page](http://maven.apache.org/plugins/maven-release-plugin/usage.html)) before proceeding with the actual release.
 
+*** DO NOT USE ECLIPSE TO RUN THESE AS IT HANGS, USE COMMAND LINE ***
+
     mvn release:clean
     mvn release:prepare
     mvn release:perform
 
 Once you've succeeded in finishing those steps, log in to [Sonatype OS](https://oss.sonatype.org/), and perform the following steps.
 
-*   Go to the Staging Repositories page
-*   Select the staging repository
-*   Click the Close button
-*   If there are any problems reported, fix them
-*   Click on the closed staging repository
-*   Right click on artifacts to download them
-*   Test the downloaded artifacts to make sure that the contents of the staging repository are what you want to release
-*   Click the Release button
-*   If there are any problems reported, fix them
-*   The release should now be in the "Releases" repository.
-*   For projects that have Maven Central synchonization enabled, their artifacts in the "Releases" repository are synched to Maven Central every two hours.  The *very first time* the WAFFLE project publishes requires a comment on the setup JIRA ticket to get synch enabled.
+*   Go to [Staging Repositories](https://oss.sonatype.org/index.html#stagingRepositories).
+*   Select the staging repository at the bottom that was created by the release process, it should have a `com.github.dblock` profile.
+*   Click the *Close* button in the toolbar. This should take a bit of time to complete, you may need to *Refresh*.
+*   If there are any problems reported, fix them.
+*   Click on the closed staging repository.
+*   Examine the *Content* tab. Right click on artifacts to download them.
+*   Test the downloaded artifacts to make sure that the contents of the staging repository are what you want to release.
+*   Click the *Release* button in the toolbar.
+*   If there are any problems reported, fix them.
+*   The release should now be in the *Releases* repository.
+*   For projects that have Maven Central synchonization enabled, their artifacts in the *Releases* repository are synched to Maven Central every two hours. The *very first time* the WAFFLE project published required a comment on the setup JIRA ticket to get synch enabled.
 
-[OSSGuide]: https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
+Deploying in event of release plugin failure
+--------------------------------------------
+
+The release plugin can be quite tricky.  Recently, we ran into issues trying to use it where it would change from snapshot to the release version but then failed the release:prepare.  As such, there is a way to get around this issue without much more work.
+
+If release plugin fails and versions are all essentially flagged for release version.  Simply use this then follow the remainder of the release process.
+
+   mvn deploy -Prelease
+
+After deployment in this case, make sure to set everything manually back to next snapshot release.
+
+Releasing the Site Page to gh-pages
+-----------------------------------
+
+Setup deployment by adding this to your .m2 settings.xml file.
+
+    <server>
+      <id>gh-pages</id>
+      <password>--replace-with-your-password--</password>
+    </server>
+
+Generate the site pages off waffle-parent pom by running.
+
+    mvn site
+
+Deploy the site pages off waffle-parent pom by running.
+
+    mvn site:deploy
+
+Deploy will use ssh to perform the deployment.  This takes some time.  Be patient!!!
+
+[OSSGuide]: http://central.sonatype.org/pages/ossrh-guide.html
 [Maven]: http://maven.apache.org/
 [gpg]: http://www.gnupg.org/
 [maven-release-plugin]: http://maven.apache.org/plugins/maven-release-plugin/
+[github-ssh-keys]: https://help.github.com/articles/generating-ssh-keys/

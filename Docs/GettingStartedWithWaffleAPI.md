@@ -33,11 +33,11 @@ set windowsAuthProviderImpl = CreateObject("Waffle.Windows.AuthProvider")
 Getting Started in Java
 -----------------------
 
-Add `waffle-jna.jar`, `jna-3.5.0.jar`, `platform-3.5.0.jar`, `guava-13.0.jar`, and `slf4j-api-1.6.6.jar` to your `CLASSPATH` or, if you use Maven, add the following to your `pom.xml`.
+Add `waffle-jna.jar`, `jna-4.2.0.jar`, `jna-platform-4.2.0.jar`, `guava-18.0.jar`, and `slf4j-api-1.7.12.jar` to your `CLASSPATH` or, if you use Maven, add the following to your `pom.xml`.
 
 ``` xml
 <properties>
-    <waffle.version>1.5</waffle.version>
+    <waffle.version>1.8.0</waffle.version>
 </properties>
 
 <dependency>

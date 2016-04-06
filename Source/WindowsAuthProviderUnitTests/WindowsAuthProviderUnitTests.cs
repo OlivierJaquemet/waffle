@@ -1,9 +1,9 @@
 using System;
-using NUnit.Framework;
 using System.ComponentModel;
 using System.DirectoryServices.ActiveDirectory;
-using System.Security.Principal;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
+using NUnit.Framework;
 
 namespace Waffle.Windows.AuthProvider.UnitTests
 {
@@ -119,6 +119,16 @@ namespace Waffle.Windows.AuthProvider.UnitTests
         }
 
         [Test]
+        public void TestAcceptCurrentSecurityToken()
+        {
+            var package = "Negotiate";
+            var result = WindowsSecurityContext.GetCurrent(package, WindowsIdentity.GetCurrent().Name, Secur32.ISC_REQ_CONNECTION, Secur32.SECURITY_NATIVE_DREP);
+            var provider = new WindowsAuthProviderImpl();
+            var ctx = provider.AcceptSecurityToken(Guid.NewGuid().ToString(), result.Token, package, Secur32.ISC_REQ_CONNECTION, Secur32.SECURITY_NATIVE_DREP);
+            Assert.IsTrue(ctx.Continue);
+        }
+
+        [Test]
         public void TestLookupAccount()
         {
             WindowsAuthProviderImpl windowsAuthProviderImpl = new WindowsAuthProviderImpl();
@@ -127,7 +137,7 @@ namespace Waffle.Windows.AuthProvider.UnitTests
             IWindowsAccount account = windowsAuthProviderImpl.LookupAccount(username);
             Console.WriteLine(account.SidString);
             Console.WriteLine(account.Fqn);
-            Assert.AreEqual(username, account.Fqn);
+            Assert.AreEqual(username.ToLower(), account.Fqn.ToLower());
         }
 
         [Test]
@@ -175,18 +185,25 @@ namespace Waffle.Windows.AuthProvider.UnitTests
             IWindowsSecurityContext continueContext = initContext;
             IWindowsSecurityContext responseContext = null;
             string connectionId = Guid.NewGuid().ToString();
-            do
+            while(true)
             {
                 responseContext = provider.AcceptSecurityToken(connectionId, continueContext.Token, package,
                     Secur32.ISC_REQ_CONNECTION, Secur32.SECURITY_NATIVE_DREP);
+
                 if (responseContext.Token != null)
                 {
                     Console.WriteLine("  Token: {0}", Convert.ToBase64String(responseContext.Token));
                     Console.WriteLine("  Continue: {0}", responseContext.Continue);
                 }
+
+                if (! responseContext.Continue)
+                {
+                    break;
+                }
+
                 continueContext = new WindowsSecurityContext(initContext, responseContext.Token,
                     Secur32.ISC_REQ_CONNECTION, Secur32.SECURITY_NATIVE_DREP);
-            } while (responseContext.Continue);
+            }
 
             Assert.IsFalse(responseContext.Continue);
             Console.WriteLine(responseContext.Identity.Fqn);
